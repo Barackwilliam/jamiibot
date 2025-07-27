@@ -1,4 +1,4 @@
-```markdown
+
 <h1 align="center" style="color: #00FFAA">
 🤖 JamiiBot: Mshirika wa Kidijitali wa Jamii
 </h1>
@@ -157,8 +157,4 @@ JamiiBot itakuwa:
 - Na AI models za Swahili understanding
 
 Karibu kwenye mapinduzi ya kiroboti kwa Afrika 🇹🇿🤖
-```
 
-Hii `README.md` ni ya kitaalamu, inashughulikia mtumiaji wa kawaida na mtaalamu, inatoa picha ya kiroboti, na inaunganisha *AI + Community + Swahili* kama mlengo wa JamiiBot. Tayari kwa GitHub.
-
-Nikuandikie pia README fupi ya docs au landing page kwa watakaotembelea website yako ya nyumbachap?
