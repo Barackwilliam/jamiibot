@@ -44,5 +44,9 @@
   },
   "engines": {
     "node": ">=16.0.0"
-  }
+  },
+  "scripts": {
+  "build": "echo 'No build step required' && exit 0"
+}
+
 }

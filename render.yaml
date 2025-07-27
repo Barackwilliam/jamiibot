@@ -2,17 +2,15 @@ services:
   - type: web
     name: Jamii-Bot
     runtime: node
-    buildCommand: |
-      npm install
-      npm run build
+    buildCommand: npm install
     startCommand: node index.js
     envVars:
       - key: NODE_ENV
         value: production
       - key: SUPABASE_URL
-        value: https://auwarqnwvthnizkoyutt.supabase.co  # Your Supabase URL
+        value: https://auwarqnwvthnizkoyutt.supabase.co
       - key: SUPABASE_KEY
-        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1d2FycW53dnRobml6a295dXR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM1MzA3NjQsImV4cCI6MjA2OTEwNjc2NH0.HoCdkbmJxxfbrnWdMCJOtWaZ2LjAiSVZO3K-qx1qbj0  # Your Supabase anon key
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1d2FycW53dnRobml6a295dXR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM1MzA3NjQsImV4cCI6MjA2OTEwNjc2NH0.HoCdkbmJxxfbrnWdMCJOtWaZ2LjAiSVZO3K-qx1qbj0
       - key: OWNER_NUMBER
         value: 255629712678
     healthCheckPath: /
