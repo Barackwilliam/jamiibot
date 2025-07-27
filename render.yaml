@@ -17,11 +17,10 @@ services:
         value: <weka_api_key_yako_hapa_kama_string>
       - key: OWNER_NUMBER
         value: 255629712678
-    healthCheckPath: /
-    autoDeploy: true
-    plan: free
-envVars:
-  - key: SUPABASE_URL
-    value: https://auwarqnwvthnizkoyutt.supabase.co
-  - key: SUPABASE_KEY
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1d2FycW53dnRobml6a295dXR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM1MzA3NjQsImV4cCI6MjA2OTEwNjc2NH0.HoCdkbmJxxfbrnWdMCJOtWaZ2LjAiSVZO3K-qx1qbj0
+        healthCheckPath: /
+        autoDeploy: true
+        plan: free
+      - key: SUPABASE_URL
+        value: https://auwarqnwvthnizkoyutt.supabase.co
+      - key: SUPABASE_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1d2FycW53dnRobml6a295dXR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM1MzA3NjQsImV4cCI6MjA2OTEwNjc2NH0.HoCdkbmJxxfbrnWdMCJOtWaZ2LjAiSVZO3K-qx1qbj0
