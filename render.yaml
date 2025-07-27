@@ -1,0 +1,25 @@
+# render.yml
+services:
+  - type: web
+    name: Jamii-Bot
+    runtime: node
+    buildCommand: |
+      npm install
+      npm run build
+    startCommand: node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SUPABASE_URL
+        fromDatabase:
+          name: supabase-db
+          property: connectionString
+      - key: SUPABASE_KEY
+        fromDatabase:
+          name: supabase-db
+          property: apiKey
+      - key: OWNER_NUMBER
+        value: 255629712678
+    healthCheckPath: /
+    autoDeploy: true
+    plan: free
