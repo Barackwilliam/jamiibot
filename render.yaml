@@ -1,4 +1,3 @@
-# render.yml
 services:
   - type: web
     name: Jamii-Bot
@@ -15,9 +14,7 @@ services:
           name: supabase-db
           property: connectionString
       - key: SUPABASE_KEY
-        fromDatabase:
-          name: supabase-db
-          property: apiKey
+        value: <weka_api_key_yako_hapa_kama_string>
       - key: OWNER_NUMBER
         value: 255629712678
     healthCheckPath: /
