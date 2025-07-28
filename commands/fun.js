@@ -839,7 +839,7 @@ mapenzi: {
                 const lines = [
         "💔 Mapenzi hayaeleweki – leo unacheka, kesho unaangalia ceiling saa 9 usiku!",
         "😢 Unampenda kwa dhati, yeye anapenda mtu anaemjibu 'K' tu!",
-        "📵 Ukimtext hajibu, lakini anaactive kwenye TikTok – mapenzi yanachosha!",
+        "📵 Ukimtext hajibu, lakini yuko active kwenye TikTok – mapenzi yanachosha jamani!",
         "🛏️ Ulisema hutamlilia tena, lakini leo umelala na earphones zikiimba Zuchu!",
         "🧠 Kichwa chako kimejaa screenshots – umekuwa mhariri wa moyo wako!",
         "🥹 Mapenzi ni kama loan ya haraka – unapata haraka lakini refund inauma!",
