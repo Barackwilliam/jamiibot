@@ -3,9 +3,6 @@
   "version": "2.0.0",
   "description": "Advanced WhatsApp Bot with multiple features",
   "main": "index.js",
-  "scripts": {
-    "build": "echo 'No build step required' && exit 0"
-  },
   "keywords": [
     "whatsapp",
     "bot",
@@ -42,9 +39,11 @@
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
-  "scripts": {
-  "start": "node index.js"
+"scripts": {
+  "start": "node index.js",
+  "build": "echo 'No build step needed'"
 }
+
 ,
   "engines": {
     "node": ">=16.0.0"
