@@ -8,10 +8,13 @@ const pino = require('pino');
 const qrcode = require('qrcode');
 const fs = require('fs');
 const cors = require('cors');
-const axios = require('axios');
+const axios = require('axios');  // <<-- Added axios here
 
 const welcomeGoodbye = require("./commands/welcomeGoodbye");
 const linkDetector = require("./commands/linkDetector");
+
+
+
 
 const cache = {};
 const messageCache = new Map();
@@ -22,16 +25,18 @@ const helpers = require('./config/helpers');
 
 const app = express();
 const httpServer = createServer(app);
+// Setup Socket.io with pingInterval and pingTimeout to keep connections alive
 const io = new Server(httpServer, {
     cors: { origin: '*', methods: ['GET', 'POST'] },
-    pingInterval: 25000,
-    pingTimeout: 60000,
+    pingInterval: 25000,  // Ping every 25 seconds
+    pingTimeout: 60000,   // Timeout if no pong within 60 seconds
 });
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ======= Health check endpoint needed for Render or any host to verify app is alive =======
 app.get('/health', (req, res) => {
     res.status(200).send('OK');
 });
@@ -64,9 +69,12 @@ config.ownerNumber = getOwner();
 
 function formatRobotResponse(text, useTemplate = false) {
     if (!useTemplate) return text;
-    const techIcons = ['🤖', '⚡', '💻', '🔌', '📱', '🖥️', '🔋', '🛠️', '🧹', '📊'];
+
+    const techIcons = ['🤖', '⚡', '💻', '🔌', '📱', '🖥️', '🔋', '🛠️', '🧩', '📊'];
     const randomIcon = techIcons[Math.floor(Math.random() * techIcons.length)];
+
     const header = `╭──✨ ${randomIcon} ${config.botName} ${randomIcon} ✨ ⋅ ⋅ ─╮\n`;
+
     text = typeof text === 'string' ? text : String(text || '');
     let formattedText = text
         .replace(/\n/g, '\n│ ')
@@ -74,23 +82,46 @@ function formatRobotResponse(text, useTemplate = false) {
         .replace(/\*/g, '⭑')
         .replace(/✅/g, '✓')
         .replace(/❌/g, '✗');
+
     const techMeter = `│ ${'▰'.repeat(2 + Math.floor(Math.random() * 2))}${'▱'.repeat(2)} JamiiBot ${'▱'.repeat(3)}\n`;
-    const footer = `╰─── ⋅ ⋅ ✨ ${randomIcon} [${new Date().getHours()}:${String(new Date().getMinutes()).padStart(2, '0')}] ⋅ ⋅ ───╯\n` +
-        `   ⏰ Response: ${Date.now() % 1000}ms | 📀 v2.0 | 🔗 nyumbachap.com`;
+    const footer = `╰─── ⋅ ⋅ ✨ ${randomIcon} [${new Date().getHours()}:${String(new Date().getMinutes()).padStart(2, '0')}]⋅ ⋅ ───╯\n` +
+        `   ⌚ Response: ${Date.now() % 1000}ms | 💾 v2.0 | 🔗 nyumbachap.com`;
+
     return `${header}│ ${formattedText}\n${techMeter}${footer}`;
 }
 
 function addTechVibes(text) {
-    const statuses = ['SYSTEM STATUS ACTIVE 🟢', 'BOT PROCESSING ⚙️', 'RESPONSE GENERATED 🤖', 'BOT CONNECTION ACTIVE 🌐'];
-    const binaryBg = Array.from({ length: 30 }, () => Math.random() > 0.5 ? '1' : '0').join('');
-    const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    return `▞▚ ${statuses[Math.floor(Math.random() * statuses.length)]}\n▚ ${binaryBg}\n\n${text}\n\n⏰ ${timestamp} | 🔋 ${Math.floor(Math.random() * 30) + 70}%`;
+    const statuses = [
+        'SYSTEM STATUS ACTIVE 🟢',
+        'BOT PROCESSING ⚙️',
+        'RESPONSE GENERATED 🤖',
+        'BOT CONNECTION ACTIVE 🌐'
+    ];
+
+    const binaryBg = Array.from({ length: 30 }, () =>
+        Math.random() > 0.5 ? '1' : '0').join('');
+
+    const timestamp = new Date().toLocaleTimeString('en-US', {
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+
+    return `▞▚ ${statuses[Math.floor(Math.random() * statuses.length)]}\n` +
+        `▚ ${binaryBg}\n\n` +
+        `${text}\n\n` +
+        `⌚ ${timestamp} | 🔋 ${Math.floor(Math.random() * 30) + 70}%`;
 }
 
 function formatHelpCommand() {
-    const visibleCommands = Object.entries(allCommands).filter(([_, command]) => !command.isSubcommand).map(([name]) => config.prefix + name);
+    const visibleCommands = Object.entries(allCommands)
+        .filter(([_, command]) => !command.isSubcommand)
+        .map(([name]) => config.prefix + name);
+
     return `📜 *Orodha ya Commands*:\n\n${visibleCommands.join('\n')}`;
 }
+
 
 function getMessageText(msg) {
     if (msg.conversation) return msg.conversation;
@@ -119,6 +150,7 @@ app.post('/api/start-session', async (req, res) => {
     try {
         const { phone } = req.body;
         if (!phone || !phone.match(/^255\d{9}$/)) return res.status(400).json({ error: 'Invalid phone number. Use 255xxxxxxxxx' });
+
         const sessionId = `session_${Date.now()}_${phone}`;
         await initializeWhatsAppSession(phone, sessionId);
         res.json({ success: true, sessionId });
@@ -131,18 +163,28 @@ app.post('/api/start-session', async (req, res) => {
 async function initializeWhatsAppSession(phone, sessionId) {
     const sessionDir = path.join(__dirname, 'sessions', sessionId);
     const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
-    const sock = makeWASocket({ auth: state, logger: pino({ level: 'silent' }), browser: ['JamiiBot', 'Chrome', '1.0.0'] });
+
+    const sock = makeWASocket({
+        auth: state,
+        logger: pino({ level: 'silent' }),
+        browser: ['JamiiBot', 'Chrome', '1.0.0']
+    });
+
+
     linkDetector.handler(sock);
     welcomeGoodbye.handler(sock);
     activeSessions[sessionId] = { sock, phone };
+
     sock.ev.on('creds.update', saveCreds);
     sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update;
+
         if (qr) {
             const qrDataUrl = await qrcode.toDataURL(qr);
             activeSessions[sessionId].qr = qrDataUrl;
             io.to(sessionId).emit('qr-update', { qr: qrDataUrl, sessionId });
         }
+
         if (connection === 'open') {
             console.log(`✅ Connected: ${phone}`);
             io.to(sessionId).emit('connection-status', { connected: true, sessionId });
@@ -151,13 +193,11 @@ async function initializeWhatsAppSession(phone, sessionId) {
                 setOwner(phone);
                 await db.saveUser(jid, { is_admin: true });
                 await sendWelcomeMessage(sock, phone);
-                await sock.sendMessage(`${phone}@s.whatsapp.net`, {
-                    text: `📣 *Ungana nasi kwa taarifa mpya, Mafunzo, na Updates ya kila wiki kupitia channel yetu rasmi ya WhatsApp:*\n\n🔗 https://whatsapp.com/channel/0029VaExlbt6rsQlSlptDW0e\n\n💡 Hakikisha ume-*Follow* ili usipitwe na fursa!`,
-                });
             } catch (e) {
                 console.error('DB or message error:', e);
             }
         }
+
         if (connection === 'close') {
             const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
             if (shouldReconnect) {
@@ -170,10 +210,9 @@ async function initializeWhatsAppSession(phone, sessionId) {
             }
         }
     });
+
     initializeMessageHandler(sock);
 }
-
-
 
 function initializeMessageHandler(sock) {
     sock.ev.on('messages.upsert', async ({ messages }) => {
