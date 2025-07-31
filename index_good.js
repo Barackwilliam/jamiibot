@@ -9,7 +9,6 @@ const qrcode = require('qrcode');
 const fs = require('fs');
 const cors = require('cors');
 const axios = require('axios');
-const debounce = require('lodash/debounce');
 
 const welcomeGoodbye = require("./commands/welcomeGoodbye");
 // const linkDetector = require("./commands/linkDetector");
@@ -20,8 +19,6 @@ const adminCommands = require('./commands/admin');
 const allCommands = { ...require('./commands'), ...adminCommands };
 const db = require('./config/db');
 const helpers = require('./config/helpers');
-
-const { saveSessionToRedis, loadSessionFromRedis } = require('./upstash-session-sync');
 
 const app = express();
 const httpServer = createServer(app);
@@ -104,7 +101,6 @@ function getMessageText(msg) {
 }
 
 const activeSessions = {};
-const debouncedSave = {}; // per-session debounce wrapper
 
 io.on('connection', (socket) => {
     console.log('Socket connected:', socket.id);
@@ -134,31 +130,14 @@ app.post('/api/start-session', async (req, res) => {
 
 async function initializeWhatsAppSession(phone, sessionId) {
     const sessionDir = path.join(__dirname, 'sessions', sessionId);
-
-    // 1. Attempt to recover previous session from Upstash Redis
-    await loadSessionFromRedis(sessionDir, sessionId);
-
     const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
     const sock = makeWASocket({ auth: state, logger: pino({ level: 'silent' }), browser: ['JamiiBot', 'Chrome', '1.0.0'] });
-
+    
     // linkDetector.handler(sock);
     welcomeGoodbye.handler(sock);
-
-    // Prepare per-session debounce if not existing
-    if (!debouncedSave[sessionId]) {
-        debouncedSave[sessionId] = debounce(async () => {
-            await saveSessionToRedis(sessionDir, sessionId);
-        }, 1000);
-    }
-
+   
     activeSessions[sessionId] = { sock, phone };
-
-    sock.ev.on('creds.update', async () => {
-        await saveCreds();
-        // schedule sync to Upstash Redis
-        debouncedSave[sessionId]();
-    });
-
+    sock.ev.on('creds.update', saveCreds);
     sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update;
         if (qr) {
@@ -193,9 +172,10 @@ async function initializeWhatsAppSession(phone, sessionId) {
             }
         }
     });
-
     initializeMessageHandler(sock);
 }
+
+
 
 function initializeMessageHandler(sock) {
     sock.ev.on('messages.upsert', async ({ messages }) => {

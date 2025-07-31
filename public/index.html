@@ -1,134 +1,183 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sw">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JamiiBot - Robotic Control Panel</title>
+  <title>JamiiBot - Jopo la Kudhibiti</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #34495e;
+      --accent: #3498db;
+      --light: #ecf0f1;
+      --dark: #2c3e50;
+      --success: #27ae60;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+    }
+
     body {
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
-      color: #e0e0e0;
-      font-family: 'Courier New', Courier, monospace;
-      overflow-x: hidden;
+      background: #f8f9fa;
+      font-family: 'Poppins', sans-serif;
+      color: var(--dark);
     }
+
+    .navbar {
+      background: var(--primary) !important;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
     .navbar-brand {
-      font-weight: 700;
-      font-size: 1.5rem;
+      font-weight: 600;
+      color: white !important;
     }
-    .status-card, .card {
-      background-color: #1e272e;
-      border: 1px solid #485460;
-      box-shadow: 0 0 15px rgba(0,255,255,0.1);
+
+    .language-switcher {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
     }
-    #qr-container {
-      background-color: #2d3436;
-      padding: 20px;
-      border-radius: 15px;
-      text-align: center;
-      box-shadow: 0 0 10px rgba(0,255,255,0.2);
+
+    .card {
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
     }
-    .command-list {
-      max-height: 500px;
+
+    .card-header {
+      background: var(--primary);
+      color: white;
+      border-radius: 10px 10px 0 0 !important;
+      font-weight: 500;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: #2980b9;
+    }
+
+    .btn-docs {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-docs:hover {
+      background: #219653;
+    }
+
+    #commands-list {
+      max-height: 300px;
       overflow-y: auto;
     }
+
+    .command-item {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .command-item:last-child {
+      border-bottom: none;
+    }
+
     .log-entry {
-      font-size: 0.85rem;
-      color: #00ffe1;
-      animation: flicker 1s infinite alternate;
-      white-space: pre-line;
+      font-size: 0.9rem;
+      padding: 8px 0;
+      border-left: 3px solid var(--accent);
+      padding-left: 10px;
     }
-    @keyframes flicker {
-      from { opacity: 1; }
-      to { opacity: 0.6; }
-    }
-    .neon-border {
-      border: 2px solid #00ffe1;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #00ffe1;
-    }
-    .log-time {
-      color: #888;
-      font-size: 0.75rem;
-    }
-    .log-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: start;
-      gap: 10px;
-      flex-direction: column;
-    }
-    .tech-title {
-      font-size: 1.3rem;
-      font-weight: bold;
-      color: #00ffe1;
-      text-shadow: 0 0 8px #00ffe1;
-    }
-    .instruction-highlight {
-      background: rgba(0, 255, 255, 0.1);
-      padding: 15px;
-      border-left: 4px solid #00ffe1;
-      border-radius: 10px;
-      animation: pulseHighlight 3s infinite;
-    }
-    @keyframes pulseHighlight {
-      0% { box-shadow: 0 0 5px #00ffe1; }
-      50% { box-shadow: 0 0 15px #00ffe1; }
-      100% { box-shadow: 0 0 5px #00ffe1; }
+
+    @media (max-width: 768px) {
+      .navbar-brand {
+        font-size: 1.2rem;
+      }
     }
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-      <a class="navbar-brand animate__animated animate__pulse animate__infinite" href="#">🤖 JamiiBot Tanzania</a>
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-robot me-2"></i>JamiiBot
+      </a>
+      <div class="d-flex align-items-center">
+        <button id="languageToggle" class="btn language-switcher me-3">
+          <i class="fas fa-language me-2"></i>EN/SW
+        </button>
+        <a id="docsBtn" href="#" target="_blank" class="btn btn-docs">
+          <i class="fas fa-book me-2"></i>Jifunze Inavyofanya Kazi
+        </a>
+      </div>
     </div>
   </nav>
 
   <div class="container my-5">
-    <div class="row g-4">
-      <div class="col-md-6">
-        <div class="card status-card neon-border">
-          <div class="card-body">
-            <div class="mb-3 instruction-highlight">
-              <h5 class="tech-title mb-3">🧠 Jinsi ya Kuunganisha JamiiBot na WhatsApp:</h5>
-              <ol class="text-light ps-3">
-                <li>👉 Ingiza namba yako ya WhatsApp kwa muundo wa kimataifa mfano: <code>2556XXXXXXXX</code>.</li>
-                <li>⚡ Bonyeza <strong>Connect Bot</strong> kuanzisha mchakato wa muunganisho.</li>
-                <li>📡 Subiri QR code ionekane kwenye skrini.</li>
-                <li>📲 Fungua WhatsApp kwenye simu yako &gt; <strong>Linked Devices</strong> &gt; <strong>Link a Device</strong>.</li>
-                <li>🔍 Scan QR code inayojitokeza kwenye ukurasa huu kwa kutumia kamera ya simu yako.</li>
-                <li>✅ Ukiona ujumbe wa mafanikio, JamiiBot itaanza kufanya kazi na namba yako.</li>
-              </ol>
-              <p style="color:yellow;" class="small mt-3">🧬QR code inaisha baada ya sekunde 120 — hakikisha unafanya haraka.</p>
-            </div>
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header" id="connectionHeader">
+            <i class="fas fa-link me-2"></i>Unganisha Boti
           </div>
-          <div class="card-header bg-info text-dark fw-bold">Bot Connection</div>
           <div class="card-body">
-            <label for="phoneNumber" class="form-label">📱 WhatsApp Number</label>
+            <div class="mb-4">
+              <h5 class="fw-bold"><i class="fas fa-brain me-2"></i>Jinsi ya Kuunganisha:</h5>
+              <ol id="connectSteps">
+                <li>Weka namba yako ya WhatsApp (mfano: <code>2556XXXXXXXX</code>).</li>
+                <li>Bofya <strong>Unganisha Boti</strong>.</li>
+                <li>Scan QR kwa kutumia WhatsApp yako.</li>
+              </ol>
+            </div>
+            <label id="numberLabel" for="phoneNumber"><i class="fas fa-mobile-alt me-2"></i>Namba ya WhatsApp</label>
             <input type="text" id="phoneNumber" class="form-control mb-3" placeholder="255xxxxxxxxx">
-            <button id="connectBtn" class="btn btn-success w-100 mb-3">
-              <span id="connectBtnText">Connect Bot</span>
+            <button id="connectBtn" class="btn btn-primary w-100 mb-3">
+              <span id="connectBtnText"><i class="fas fa-plug me-2"></i>Unganisha Boti</span>
               <span id="connectSpinner" class="spinner-border spinner-border-sm d-none"></span>
             </button>
-            <div id="qr-container" class="d-none animate__animated animate__fadeIn">
-              <p style="color: yellow;">Scan this QR code:</p>
-              <img id="qrImage" style="max-width: 100%; border: 1px solid #00ffe1; border-radius: 5px;" />
-              <div class="mt-2 text-danger small">Expires in <span id="qrTimer">120</span> seconds</div>
+            <div id="qr-container" class="d-none animate__animated animate__fadeIn text-center">
+              <p class="text-primary" id="qrPrompt"><i class="fas fa-qrcode me-2"></i>Scan QR hii:</p>
+              <img id="qrImage" style="max-width: 100%; border-radius: 5px;" />
+              <div class="mt-2 text-danger small"><i class="fas fa-clock me-2"></i>Inamalizika baada ya sekunde <span id="qrTimer">120</span></div>
             </div>
             <div id="connectionStatus" class="mt-3 alert d-none"></div>
           </div>
         </div>
       </div>
 
-      <div class="col-md-6">
-        <div class="card neon-border">
-          <div class="card-header bg-secondary text-white">📝 System Activity Log</div>
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header" id="commandsHeader">
+            <i class="fas fa-terminal me-2"></i>Commands Muhimu
+          </div>
+          <div class="card-body">
+            <div id="commands-list">
+              <div class="command-item" data-sw=".help - Onesha amri zote." data-en=".help - Shows all commands.">
+                <strong>.help</strong> - Onesha amri zote.
+              </div>
+              <div class="command-item" data-sw=".bot - Jifunze jinsi ya kuunganisha bot hii na WhatsApp yako." data-en=".bot - Learn how to Connect JamiiBot with your WhatsApp Number.">
+                <strong>.bot</strong> - Jifunze jinsi ya kuunganisha.
+              </div>
+              <div class="command-item" data-sw=".nyumbachap - Tafuta chumba/Nyumba popote Tanzania" data-en=".nyumbachap - Find Room/house to Rent or Buy anywhere in Tanzania .">
+                <strong>.nyumbachap</strong> - Tafuta chumba/Nyumba popote Tanzania
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" id="logHeader">
+            <i class="fas fa-history me-2"></i>Historia ya Matukio
+          </div>
           <div class="card-body p-0">
-            <div class="list-group list-group-flush command-list" id="activityLog">
-              <div class="list-group-item log-entry">⚙️ Initializing logs...</div>
+            <div class="list-group list-group-flush" id="activityLog">
+              <div class="list-group-item log-entry">⚙️ Mfumo umeanza kufanya kazi...</div>
             </div>
           </div>
         </div>
@@ -138,6 +187,35 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+    const languageToggle = document.getElementById('languageToggle');
+    let currentLanguage = 'sw';
+
+    languageToggle.addEventListener('click', () => {
+      currentLanguage = currentLanguage === 'sw' ? 'en' : 'sw';
+      updateLanguage();
+    });
+
+    function updateLanguage() {
+      const isSw = currentLanguage === 'sw';
+      document.querySelector('.navbar-brand').innerHTML = `<i class="fas fa-robot me-2"></i>JamiiBot${isSw ? '' : ' (EN)'}`;
+      document.getElementById('docsBtn').innerHTML = `<i class="fas fa-book me-2"></i>${isSw ? 'Jifunze Inavyofanya Kazi' : 'Learn How It Works'}`;
+      document.getElementById('connectionHeader').innerHTML = `<i class="fas fa-link me-2"></i>${isSw ? 'Unganisha Boti' : 'Bot Connection'}`;
+      document.getElementById('commandsHeader').innerHTML = `<i class="fas fa-terminal me-2"></i>${isSw ? 'Commands Muhimu' : 'Important Commands'}`;
+      document.getElementById('logHeader').innerHTML = `<i class="fas fa-history me-2"></i>${isSw ? 'Historia ya Matukio' : 'Activity Log'}`;
+      document.querySelector('h5').textContent = isSw ? 'Jinsi ya Kuunganisha:' : 'How to Connect:';
+      document.getElementById('connectSteps').innerHTML = isSw
+        ? '<li>Weka namba yako ya WhatsApp (mfano: <code>2556XXXXXXXX</code>).</li><li>Bofya <strong>Unganisha Boti</strong>.</li><li>Scan QR kwa kutumia WhatsApp yako.</li>'
+        : '<li>Enter your WhatsApp number (e.g., <code>2556XXXXXXXX</code>).</li><li>Click <strong>Connect Bot</strong>.</li><li>Scan the QR code with WhatsApp.</li>';
+      document.getElementById('numberLabel').innerHTML = `<i class="fas fa-mobile-alt me-2"></i>${isSw ? 'Namba ya WhatsApp' : 'WhatsApp Number'}`;
+      document.getElementById('connectBtnText').innerHTML = `<i class="fas fa-plug me-2"></i>${isSw ? 'Unganisha Boti' : 'Connect Bot'}`;
+      document.getElementById('qrPrompt').innerHTML = `<i class="fas fa-qrcode me-2"></i>${isSw ? 'Scan QR hii:' : 'Scan this QR code:'}`;
+
+      document.querySelectorAll('.command-item').forEach(el => {
+        el.innerHTML = isSw ? el.dataset.sw : el.dataset.en;
+      });
+    }
+
+    // Zilizobaki hazijabadilika (socket & QR logic)
     let socket = io();
     let currentSessionId = null;
     let qrTimerInterval = null;
@@ -154,12 +232,12 @@
     connectBtn.addEventListener('click', async () => {
       const phoneNumber = document.getElementById('phoneNumber').value.trim();
       if (!phoneNumber.match(/^255\d{9}$/)) {
-        showAlert('Enter a valid number (255xxxxxxxxx)', 'danger');
+        showAlert(currentLanguage === 'sw' ? 'Ingiza namba sahihi ya simu (255xxxxxxxxx)' : 'Enter a valid number (255xxxxxxxxx)', 'danger');
         return;
       }
 
       connectBtn.disabled = true;
-      connectBtnText.textContent = 'Connecting...';
+      connectBtnText.innerHTML = '<i class="fas fa-spinner me-2"></i>' + (currentLanguage === 'sw' ? 'Inaunganisha...' : 'Connecting...');
       connectSpinner.classList.remove('d-none');
 
       try {
@@ -170,13 +248,13 @@
         });
 
         const result = await response.json();
-        if (!response.ok) throw new Error(result.error || 'Failed');
+        if (!response.ok) throw new Error(result.error || 'Imeshindikana');
 
         currentSessionId = result.sessionId;
         socket.emit('join-session', currentSessionId);
-        showAlert('Waiting for QR...', 'info');
+        showAlert(currentLanguage === 'sw' ? 'Inasubiri QR...' : 'Waiting for QR...', 'info');
       } catch (err) {
-        showAlert(`Failed: ${err.message}`, 'danger');
+        showAlert(`${currentLanguage === 'sw' ? 'Imeshindikana' : 'Failed'}: ${err.message}`, 'danger');
         resetButton();
       }
     });
@@ -186,7 +264,7 @@
       qrContainer.classList.remove('d-none');
       qrImage.src = qrDataUrl;
       startQRTimer();
-      showAlert('Scan the QR code.', 'info');
+      showAlert(currentLanguage === 'sw' ? 'Scan QR hii.' : 'Scan the QR code.', 'info');
     }
 
     function startQRTimer() {
@@ -199,7 +277,7 @@
         if (timeLeft <= 0) {
           clearInterval(qrTimerInterval);
           qrContainer.classList.add('d-none');
-          showAlert('QR expired. Try again.', 'warning');
+          showAlert(currentLanguage === 'sw' ? 'QR imeisha muda. Jaribu tena.' : 'QR expired. Try again.', 'warning');
         }
       }, 1000);
     }
@@ -208,23 +286,28 @@
       clearInterval(qrTimerInterval);
       qrContainer.classList.add('d-none');
       connectBtn.disabled = true;
-      connectBtnText.textContent = 'Connected';
-      showAlert('Bot connected successfully!', 'success');
+      connectBtnText.innerHTML = `<i class="fas fa-check-circle me-2"></i>${currentLanguage === 'sw' ? 'Imeunganishwa' : 'Connected'}`;
+      showAlert(currentLanguage === 'sw' ? 'Boti imeunganishwa kikamilifu!' : 'Bot connected successfully!', 'success');
     }
 
     function resetButton() {
       connectBtn.disabled = false;
-      connectBtnText.textContent = 'Connect Bot';
+      connectBtnText.innerHTML = `<i class="fas fa-plug me-2"></i>${currentLanguage === 'sw' ? 'Unganisha Boti' : 'Connect Bot'}`;
       connectSpinner.classList.add('d-none');
     }
 
     function showAlert(msg, type) {
-      connectionStatus.textContent = msg;
+      const icons = {
+        danger: 'exclamation-triangle',
+        info: 'info-circle',
+        success: 'check-circle',
+        warning: 'exclamation-circle'
+      };
+      connectionStatus.innerHTML = `<i class="fas fa-${icons[type]} me-2"></i>${msg}`;
       connectionStatus.className = `alert alert-${type}`;
       connectionStatus.classList.remove('d-none');
     }
 
-    // Socket events
     socket.on('qr-update', ({ qr }) => showQR(qr));
     socket.on('connection-status', ({ connected }) => connected && onBotConnected());
 
@@ -234,11 +317,13 @@
         (msg.data || []).forEach(entry => {
           const item = document.createElement('div');
           item.className = 'list-group-item log-entry';
-          item.textContent = `> ${entry.user_jid} ran: ${entry.command} ${entry.args.join(' ')}`;
+          item.innerHTML = `<i class="fas fa-chevron-right me-2"></i>${entry.user_jid} aliendesha: <strong>${entry.command}</strong> ${entry.args.join(' ')}`;
           activityLog.appendChild(item);
         });
       }
     });
+
+    updateLanguage(); // initialize default language
   </script>
 </body>
 </html>
