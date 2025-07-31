@@ -132,8 +132,10 @@ async function initializeWhatsAppSession(phone, sessionId) {
     const sessionDir = path.join(__dirname, 'sessions', sessionId);
     const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
     const sock = makeWASocket({ auth: state, logger: pino({ level: 'silent' }), browser: ['JamiiBot', 'Chrome', '1.0.0'] });
-    linkDetector.handler(sock);
+    
+    // linkDetector.handler(sock);
     welcomeGoodbye.handler(sock);
+   
     activeSessions[sessionId] = { sock, phone };
     sock.ev.on('creds.update', saveCreds);
     sock.ev.on('connection.update', async (update) => {
