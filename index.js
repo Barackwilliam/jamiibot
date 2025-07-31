@@ -11,7 +11,7 @@ const cors = require('cors');
 const axios = require('axios');
 
 const welcomeGoodbye = require("./commands/welcomeGoodbye");
-const linkDetector = require("./commands/linkDetector");
+// const linkDetector = require("./commands/linkDetector");
 
 const cache = {};
 const messageCache = new Map();
