@@ -142,7 +142,7 @@ async function initializeWhatsAppSession(phone, sessionId) {
     const sock = makeWASocket({ auth: state, logger: pino({ level: 'silent' }), browser: ['JamiiBot', 'Chrome', '1.0.0'] });
 
     // linkDetector.handler(sock);
-    welcomeGoodbye.handler(sock);
+    // welcomeGoodbye.handler(sock);
 
     // Prepare per-session debounce if not existing
     if (!debouncedSave[sessionId]) {
